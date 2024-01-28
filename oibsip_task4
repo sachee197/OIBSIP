@@ -1,0 +1,256 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.lang.Exception;
+import java.util.Timer;
+import java.util.TimerTask;
+class login extends JFrame implements ActionListener
+{
+    JButton b1;
+    JPanel newPanel,newPanel2;
+    JLabel user, password;
+    final JTextField  tf1, tf2;
+    login()
+    {
+        JLabel user = new JLabel("                  Username");
+        user.setFont(new Font("Arial", Font.PLAIN, 30)); 
+        tf1 = new JTextField(15);
+        Font bigFont1 = tf1.getFont().deriveFont(Font.PLAIN, 40f);
+        tf1.setFont(bigFont1);
+        JLabel password = new JLabel("                     Password");
+        password.setFont(new Font("Arial", Font.PLAIN, 40));
+        tf2 = new JPasswordField(8);
+        Font bigFont2 = tf2.getFont().deriveFont(Font.PLAIN, 40f);
+        tf2.setFont(bigFont2);
+        b1 = new JButton("SUBMIT");
+        b1.setFont(new Font("Arial", Font.PLAIN, 40));
+        newPanel = new JPanel(new GridLayout(2,2,20,50));
+        newPanel.add(user);
+        newPanel.add(tf1);
+        newPanel.add(password);
+        newPanel.add(tf2);
+        newPanel2= new JPanel(new FlowLayout());
+        newPanel2.add(b1);
+        add(newPanel, BorderLayout.CENTER);
+        add("South",newPanel2);
+        b1.addActionListener(this);
+        setTitle("ONLINE EXAMINATION LOGIN");
+    }
+    public void actionPerformed(ActionEvent ae)
+    {
+        String userValue = tf1.getText();
+        String passValue = tf2.getText();
+        if(!passValue.equals(""))
+            new OnlineTestBegin(userValue);
+        else
+        {
+            tf2.setText("Enter Password : ");
+            actionPerformed(ae);
+        }
+    }
+}
+class OnlineTestBegin extends JFrame implements ActionListener
+{
+    JLabel l;
+    JLabel l1;
+    JRadioButton jb[]=new JRadioButton[6];
+    JButton b1,b2,log;
+    ButtonGroup bg;
+    int count=0,current=0,x=1,y=1,now=0;
+    int m[]=new int[10];
+    Timer timer = new Timer();
+    OnlineTestBegin(String s)
+    {
+        super(s);
+        l=new JLabel();
+        l1 = new JLabel();
+        add(l);
+        add(l1);
+        bg=new ButtonGroup();
+        for(int i=0;i<5;i++)
+        {
+            jb[i]=new JRadioButton();
+            add(jb[i]);
+            bg.add(jb[i]);
+        }
+        b1=new JButton("Save And Next");
+        b1.setFont(new Font("Arial", Font.PLAIN, 20));
+        b2=new JButton("Save For Later");
+        b2.setFont(new Font("Arial", Font.PLAIN, 20));
+        b1.addActionListener(this);
+        b2.addActionListener(this);
+        add(b1);add(b2);
+        set();
+        l.setBounds(60,60,700,30);  
+        l1.setBounds(40,30,400,30);
+        jb[0].setBounds(80,120,500,30);
+        jb[1].setBounds(80,160,500,30);
+        jb[2].setBounds(80,200,500,30);
+        jb[3].setBounds(80,240,500,30);
+        b1.setBounds(150,300,200,30);
+        b2.setBounds(450,300,200,30);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(null);
+        setLocation(250,100);
+        setVisible(true);
+        setSize(1000,700);
+        timer.scheduleAtFixedRate(new TimerTask()
+        {
+            int i = 300;
+            public void run()
+            {
+                l1.setText("Time Left: " + i);
+                l1.setFont(new Font("Arial", Font.PLAIN, 20));
+                i--;
+                if (i < 0)
+                {
+                    timer.cancel();
+                    l1.setText("Time up");
+                    l1.setFont(new Font("Arial", Font.PLAIN, 20));
+                }
+            }
+        }, 0, 1000);
+    }
+    public void actionPerformed(ActionEvent e)
+    {
+        if(e.getSource()==b1)
+        {
+            if(check())
+            {
+                count=count+1;
+            }
+            current++;
+            set();
+            if(current==4)
+            {
+                b1.setEnabled(false);
+                b2.setText("Result");
+                b2.setFont(new Font("Arial", Font.PLAIN, 20));
+            }
+        }
+        if(e.getActionCommand().equals("Save For Later"))
+        {
+            JButton bk=new JButton("Review"+x);
+            bk.setBounds(480,20+30*x,100,30);
+            add(bk);
+            bk.addActionListener(this);
+            m[x]=current;
+            x++;
+            current++;
+            set();
+            if(current==4)
+                b2.setText("Result");
+            b2.setFont(new Font("Arial", Font.PLAIN, 20));
+            setVisible(false);
+            setVisible(true);
+        }
+        for(int i=0,y=1;i<x;i++,y++)
+        {
+            if(e.getActionCommand().equals("Review"+y))
+            {
+                if(check())
+                    count=count+1;
+                now=current;
+                current=m[y];
+                set();
+                ((JButton)e.getSource()).setEnabled(false);
+                current=now;
+            }
+        }
+        if(e.getActionCommand().equals("Result"))
+        {
+            if(check())
+                count=count+1;
+            current++;
+            JOptionPane.showMessageDialog(this,"SCORE = "+count);
+            System.exit(0);
+        }
+    }
+    void set()
+    {
+        jb[4].setSelected(true);
+        if(current==0)
+        {
+            l.setText("1: Number of primitive data types in java are?");
+            l.setFont(new Font("Arial", Font.PLAIN, 20));
+            jb[0].setText("6");jb[1].setText("7");jb[2].setText("8");jb[3].setText("9");
+            jb[0].setFont(new Font("Arial", Font.PLAIN, 20));
+            jb[1].setFont(new Font("Arial", Font.PLAIN, 20));
+            jb[2].setFont(new Font("Arial", Font.PLAIN, 20));
+            jb[3].setFont(new Font("Arial", Font.PLAIN, 20));
+        }
+        if(current==1)
+        {
+            l.setText("2: Identify the keyword among the following that makes a variable belong to a class,rather than being defined for each instance of the class." );
+            l.setFont(new Font("Arial", Font.PLAIN, 20));
+            jb[0].setText(" final");jb[1].setText("static");jb[2].setText("volatile");jb[3].setText("abstract");
+            jb[0].setFont(new Font("Arial", Font.PLAIN, 20));
+            jb[1].setFont(new Font("Arial", Font.PLAIN, 20));
+            jb[2].setFont(new Font("Arial", Font.PLAIN, 20));
+            jb[3].setFont(new Font("Arial", Font.PLAIN, 20));
+        }
+        if(current==2)
+        {
+            l.setText("3: What is the variables declared in a class for the use of all methods of the class called?");
+            l.setFont(new Font("Arial", Font.PLAIN, 20));
+            jb[0].setText("Object");jb[1].setText("Instance Variable");jb[2].setText("Reference variable");jb[3].setText("None");
+            jb[0].setFont(new Font("Arial", Font.PLAIN, 20));
+            jb[1].setFont(new Font("Arial", Font.PLAIN, 20));
+            jb[2].setFont(new Font("Arial", Font.PLAIN, 20));
+            jb[3].setFont(new Font("Arial", Font.PLAIN, 20));
+        }
+        if(current==3)
+        {
+            l.setText("4:Which of these classes are the direct subclasses of the Throwable class?");
+            l.setFont(new Font("Arial", Font.PLAIN, 20));
+            jb[0].setText("RuntimeException and Error class");jb[1].setText("Exception and VirtualMachineError class");jb[2].setText("Error and Exception class");jb[3].setText("IOException and VirtualMachineError class");
+            jb[0].setFont(new Font("Arial", Font.PLAIN, 20));
+            jb[1].setFont(new Font("Arial", Font.PLAIN, 20));
+            jb[2].setFont(new Font("Arial", Font.PLAIN, 20));
+            jb[3].setFont(new Font("Arial", Font.PLAIN, 20));
+        }
+        if(current==4)
+        {
+            l.setText("5: Which concept of java is a way of converting real world objects in terms of class?");
+            l.setFont(new Font("Arial", Font.PLAIN, 20));
+            jb[0].setText("Encapsulation");jb[1].setText("Polymorphism");jb[2].setText("Abstraction");jb[3].setText("Inheritance");
+            jb[0].setFont(new Font("Arial", Font.PLAIN, 20));
+            jb[1].setFont(new Font("Arial", Font.PLAIN, 20));
+            jb[2].setFont(new Font("Arial", Font.PLAIN, 20));
+            jb[3].setFont(new Font("Arial", Font.PLAIN, 20));
+        }
+        l.setBounds(70,70,800,40);
+        for(int i=0,j=0;i<=130;i+=40,j++)  //jb[0].setBounds(90,120,500,30);
+            jb[j].setBounds(90,120+i,500,30);
+    }
+    boolean check()
+    {
+        if(current==0)
+            return(jb[2].isSelected());
+        if(current==1)
+            return(jb[1].isSelected());
+        if(current==2)
+            return(jb[1].isSelected());
+        if(current==3)
+            return(jb[2].isSelected());
+        if(current==4)
+            return(jb[2].isSelected());
+        return false;
+    }
+}
+class OnlineExam
+{
+    public static void main(String args[])
+    {
+        try
+        {
+            login form = new login();
+            form.setSize(1000,500);
+            form.setVisible(true);
+        }
+        catch(Exception e)
+        {
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+    }
+}
